@@ -1,6 +1,6 @@
 export interface LunchState {
     userId: string | null;
-    agreeStatus: string | null;
+    agreedDate: string | null;
 }
 
 export interface GeminiResponse {

@@ -1,23 +1,17 @@
 import { LunchState } from "./types";
 
 export class StateManager {
-    private state = new Map<string, Array<LunchState>>();
+    private state = new Array<LunchState>();
 
-    get(channelId: string): Array<LunchState> {
-        return (
-            this.state.get(channelId) ||
-            new Array<LunchState>().fill({
-                userId: null,
-                agreeStatus: null,
-            })
-        );
+    get(): Array<LunchState> {
+        return this.state;
     }
 
-    set(channelId: string, state: Array<LunchState>): void {
-        this.state.set(channelId, state);
+    set(state: Array<LunchState>): void {
+        this.state = state;
     }
 
-    clear(channelId: string): void {
-        this.state.delete(channelId);
+    clear(): void {
+        this.state = new Array<LunchState>();
     }
 }

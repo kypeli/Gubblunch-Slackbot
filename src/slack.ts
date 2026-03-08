@@ -17,8 +17,7 @@ export function setupSlackApp(
     app.event("app_mention", async ({ event, say, client }) => {
         console.log("Received app_mention event:", event);
         try {
-            // Extract channel and user info
-            const channelId = event.channel;
+            // Extract user info
             const userId = event.user;
             const timestamp = event.ts;
             const threadTs = event.thread_ts;
@@ -35,7 +34,7 @@ export function setupSlackApp(
             }
 
             // Load current state
-            const currentState = stateManager.get(channelId);
+            const currentState = stateManager.get();
 
             // Process with Gemini
             const geminiResponse = await geminiClient.processMessage(
@@ -50,11 +49,11 @@ export function setupSlackApp(
                 const updatedState: Array<LunchState> =
                     geminiResponse.lunchState.map((item) => ({
                         userId: item?.userId || null,
-                        agreeStatus: item?.agreeStatus || null,
+                        agreedDate: item?.agreedDate || null,
                     }));
 
                 // For simplicity, we replace the entire state. In a real app, you'd likely want to merge it.
-                stateManager.set(channelId, updatedState);
+                stateManager.set(updatedState);
             }
 
             // Post response
