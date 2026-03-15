@@ -28,7 +28,7 @@ terraform init
 
 # Apply the Terraform configuration passing the required secrets explicitly
 # Variables that have default values in variables.tf are omitted, unless you want to override them.
-terraform apply \
+terraform apply -auto-approve \
   -var="slack_bot_token=${SLACK_BOT_TOKEN}" \
   -var="slack_signing_secret=${SLACK_SIGNING_SECRET}" \
   -var="gemini_api_key=${GEMINI_API_KEY}"
