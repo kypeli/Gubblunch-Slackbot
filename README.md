@@ -8,12 +8,12 @@ The bot is designed to run as an **AWS Lambda function**: Slack sends events to 
 
 - **@mention only**: Bot only responds to direct mentions
 - **Natural language**: Uses Gemini to detect intent and manage state
-- **In-memory state**: Ready to be replaced with Redis for scaling
+- **Persistent state**: Uses AWS DynamoDB for durable, shared state
 
 ## Architecture
 
 - **`src/types.ts`**: Type definitions for state and Gemini responses
-- **`src/state.ts`**: In-memory state manager (swappable interface for Redis)
+- **`src/state.ts`**: DynamoDB state manager using AWS SDK v3
 - **`src/gemini.ts`**: Gemini client using `@google/genai` with structured JSON responses
 - **`src/slack.ts`**: Bolt app setup and event handling (Socket Mode for local dev)
 - **`src/index.ts`**: Entry point, wires everything together
@@ -40,6 +40,7 @@ bun install
 - `SLACK_SIGNING_SECRET`: Signing secret for request verification
 - `GEMINI_API_KEY`: Gemini API key
 - `GEMINI_MODEL`: Model ID (default: `gemini-3.1-flash-lite-preview`)
+- `DYNAMODB_TABLE`: DynamoDB table name (set by Terraform in Lambda deployment)
 
 ### Running locally (Socket Mode)
 
@@ -68,7 +69,7 @@ This script:
 
 1. Loads environment variables from `.env`
 2. Builds the Lambda bundle (`dist/lambda.js`) with Bun
-3. Runs `terraform apply` to deploy/update the Lambda and its Function URL
+3. Runs `terraform apply` to deploy/update the Lambda, DynamoDB table, and Function URL
 
 After deploying, Terraform outputs the Function URL:
 
@@ -90,5 +91,5 @@ Configure this URL in your Slack app under **Event Subscriptions** request URL. 
 
 ## Future Work
 
-- Replace `StateManager` with Redis (AWS ElastiCache)
 - Add persistent logging/audit trail
+- Scale to multiple channels with channel-scoped state
