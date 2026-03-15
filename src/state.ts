@@ -1,17 +1,22 @@
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { LunchState } from "./types";
 
+const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+const TABLE = process.env.DYNAMODB_TABLE!;
+const PK = "lunch_state";
+
 export class StateManager {
-    private state = new Array<LunchState>();
-
-    get(): Array<LunchState> {
-        return this.state;
+    async get(): Promise<Array<LunchState>> {
+        const res = await client.send(new GetCommand({ TableName: TABLE, Key: { pk: PK } }));
+        return res.Item?.states ?? [];
     }
 
-    set(state: Array<LunchState>): void {
-        this.state = state;
+    async set(state: Array<LunchState>): Promise<void> {
+        await client.send(new PutCommand({ TableName: TABLE, Item: { pk: PK, states: state } }));
     }
 
-    clear(): void {
-        this.state = new Array<LunchState>();
+    async clear(): Promise<void> {
+        await this.set([]);
     }
 }

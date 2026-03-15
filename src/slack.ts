@@ -42,7 +42,7 @@ export function setupSlackApp(
             }
 
             // Load current state
-            const currentState = stateManager.get();
+            const currentState = await stateManager.get();
 
             // Process with Gemini
             const geminiResponse = await geminiClient.processMessage(
@@ -61,7 +61,7 @@ export function setupSlackApp(
                     }));
 
                 // For simplicity, we replace the entire state. In a real app, you'd likely want to merge it.
-                stateManager.set(updatedState);
+                await stateManager.set(updatedState);
             }
 
             // Post response

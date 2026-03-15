@@ -1,5 +1,6 @@
 data "aws_caller_identity" "current" {}
 
+
 data "aws_iam_policy_document" "lambda_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -42,6 +43,7 @@ resource "aws_lambda_function" "slack_bot" {
       SLACK_SIGNING_SECRET = var.slack_signing_secret
       GEMINI_API_KEY       = var.gemini_api_key
       GEMINI_MODEL         = var.gemini_model_name
+      DYNAMODB_TABLE       = aws_dynamodb_table.state.name
     }
   }
 }
