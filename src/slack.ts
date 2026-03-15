@@ -1,4 +1,4 @@
-import { App } from "@slack/bolt";
+import { App, Receiver } from "@slack/bolt";
 import { LunchState } from "./types";
 import { GeminiClient } from "./gemini";
 import { StateManager } from "./state";
@@ -6,13 +6,21 @@ import { StateManager } from "./state";
 export function setupSlackApp(
     stateManager: StateManager,
     geminiClient: GeminiClient,
+    receiver?: Receiver,
 ): App {
-    const app = new App({
-        socketMode: true,
-        appToken: process.env.SLACK_APP_TOKEN,
-        signingSecret: process.env.SLACK_SIGNING_SECRET,
-        token: process.env.SLACK_BOT_TOKEN,
-    });
+    const app = new App(
+        receiver
+            ? {
+                  token: process.env.SLACK_BOT_TOKEN,
+                  receiver,
+              }
+            : {
+                  socketMode: true,
+                  appToken: process.env.SLACK_APP_TOKEN,
+                  signingSecret: process.env.SLACK_SIGNING_SECRET,
+                  token: process.env.SLACK_BOT_TOKEN,
+              },
+    );
 
     app.event("app_mention", async ({ event, say, client }) => {
         console.log("Received app_mention event:", event);
