@@ -1,6 +1,6 @@
 # Gubblunch Slack Bot
 
-A Slack bot that helps track lunch agreements per channel using Gemini AI. Responds in Swedish.
+A Slack bot that helps track lunch agreements using Gemini AI. Responds in Swedish.
 
 The bot is designed to run as an **AWS Lambda function**: Slack sends events to the Lambda Function URL, and the Lambda processes and responds to them. For local development it can also run in Socket Mode, where the bot maintains a persistent connection to Slack instead.
 
@@ -40,7 +40,7 @@ bun install
 - `SLACK_SIGNING_SECRET`: Signing secret for request verification
 - `GEMINI_API_KEY`: Gemini API key
 - `GEMINI_MODEL`: Model ID (default: `gemini-3.1-flash-lite-preview`)
-- `DYNAMODB_TABLE`: DynamoDB table name (set by Terraform in Lambda deployment)
+- `DYNAMODB_TABLE`: DynamoDB table name (Required; set by Terraform in Lambda deployment)
 
 ### Running locally (Socket Mode)
 
@@ -48,7 +48,7 @@ bun install
 bun run src/index.ts
 ```
 
-This uses Socket Mode — the bot opens a persistent WebSocket connection to Slack, so no public URL is needed. Requires `SLACK_APP_TOKEN` in addition to the other variables.
+This uses Socket Mode — the bot opens a persistent WebSocket connection to Slack, so no public URL is needed. Requires `SLACK_APP_TOKEN` and `DYNAMODB_TABLE` in addition to the other variables.
 
 ## Deployment (AWS Lambda)
 
@@ -77,7 +77,7 @@ After deploying, Terraform outputs the Function URL:
 slack_events_request_url = "https://<id>.lambda-url.<region>.on.aws/"
 ```
 
-Configure this URL in your Slack app under **Event Subscriptions** request URL. Slack will POST all bot events to this endpoint, which the Lambda processes and responds to.
+Configure this URL in your Slack app under **Event Subscriptions** AND **Interactivity & Shortcuts** request URL sections. Slack will POST all bot events to this endpoint, which the Lambda processes and responds to.
 
 ### Terraform variables
 
@@ -92,4 +92,4 @@ Configure this URL in your Slack app under **Event Subscriptions** request URL. 
 ## Future Work
 
 - Add persistent logging/audit trail
-- Scale to multiple channels with channel-scoped state
+- Scale to multiple channels with channel-scoped state (currently shared)

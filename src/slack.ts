@@ -13,6 +13,7 @@ export function setupSlackApp(
             ? {
                   token: process.env.SLACK_BOT_TOKEN,
                   receiver,
+                  processBeforeResponse: true,
               }
             : {
                   socketMode: true,
@@ -21,6 +22,17 @@ export function setupSlackApp(
                   token: process.env.SLACK_BOT_TOKEN,
               },
     );
+
+    // Skip retries from Slack due to timeouts (common during cold starts)
+    app.use(async ({ context, next }) => {
+        if (context.retryNum !== undefined && context.retryNum > 0) {
+            console.log(
+                `Skipping retry: num=${context.retryNum}, reason=${context.retryReason}`,
+            );
+            return;
+        }
+        await next();
+    });
 
     app.event("app_mention", async ({ event, say, client }) => {
         console.log("Received app_mention event:", event);

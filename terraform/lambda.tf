@@ -36,6 +36,7 @@ resource "aws_lambda_function" "slack_bot" {
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
   runtime          = "nodejs22.x"
   timeout          = 30
+  memory_size      = 512
 
   environment {
     variables = {
